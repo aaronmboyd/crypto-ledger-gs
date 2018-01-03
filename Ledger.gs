@@ -1,40 +1,3 @@
-
-// *********************************************************************************************************************
-// Spreadsheet functions
-// *********************************************************************************************************************
-
-function newEntry()
-{   var spreadSheet = SpreadsheetApp.getActiveSpreadsheet ();
-    var ledgerSheet = spreadSheet.getSheetByName("Ledger");
-    var lastRow = ledgerSheet.getLastRow();
-    Logger.log("lastRow =" + lastRow);
-    var lastColumn = ledgerSheet.getLastColumn();
-    Logger.log("lastColumn =" + lastColumn);
-    var lastEntry = ledgerSheet.getRange(lastRow,1, 1, lastColumn);
-    Logger.log("lastEntry =" + lastEntry);
-    var destinationEntry = ledgerSheet.getRange(lastRow+1,1,1,lastColumn);
-    lastEntry.copyTo (destinationEntry);
-    ledgerSheet.getRange(lastRow+1,1).setValue(Utilities.formatDate(new Date(), "GMT", "dd/MMM/yyyy"));
-}
-
-function deleteEntry()
-{   var spreadSheet = SpreadsheetApp.getActiveSpreadsheet ();
-    var ledgerSheet = spreadSheet.getSheetByName("Ledger");
-    var lastRow = ledgerSheet.getLastRow();
-    var lastColumn = ledgerSheet.getLastColumn();
-    var lastEntry = ledgerSheet.getRange(lastRow,1, 1, lastColumn);
-    lastEntry.clear();
-    lastEntry.clearDataValidations();
-    lastEntry.clearFormat();
-}
-
-function onOpen() {
-SpreadsheetApp.getUi().createMenu('Ledger')
-.addItem('New Entry','newEntry')
-.addItem('Delete Last','deleteEntry')
-.addToUi()
-}
-
 // *********************************************************************************************************************
 // Financial functions
 // *********************************************************************************************************************
@@ -45,8 +8,9 @@ SpreadsheetApp.getUi().createMenu('Ledger')
 function getUSDPriceCoinMarketCap (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
+  var cacheSalt = 'price'
 
-  var cachedValue = getFromCache(url);
+  var cachedValue = getFromCache(url + cacheSalt);  
   if(cachedValue!=null)
     return Number(cachedValue);
 
@@ -61,9 +25,93 @@ function getUSDPriceCoinMarketCap (name) {
   var price = priceval["USD"];
 
   var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url, price, cacheExpiryInSeconds);
+  putToCache(url + cacheSalt, price, cacheExpiryInSeconds);
 
   return Number(price)
+}
+
+// Returns current cryptocurrency market cap from CoinMarketcap API
+// Reference: https://coinmarketcap.com/api/
+
+function getUSDMarketCap (name) {
+
+  var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
+  var cacheSalt = 'marketcap'
+
+  var cachedValue = getFromCache(url + cacheSalt);
+  if(cachedValue!=null)
+    return Number(cachedValue);
+
+  var response = UrlFetchApp.fetch(url);
+  var json = response.getContentText();
+
+  if (response.getResponseCode() != 200)
+    return -1 * response.getResponseCode();
+
+  var data = JSON.parse(json);
+  var marketcap = {"USD" : data[0].market_cap_usd };
+  var returnVal = marketcap["USD"];
+
+  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
+  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
+
+  return Number(returnVal)
+}
+
+// Returns token available supply from CoinMarketcap API
+// Reference: https://coinmarketcap.com/api/
+
+function getAvailableSupply (name) {
+
+  var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
+  var cacheSalt = 'availableSupply'
+
+  var cachedValue = getFromCache(url + cacheSalt);
+  if(cachedValue!=null)
+    return Number(cachedValue);
+
+  var response = UrlFetchApp.fetch(url);
+
+  if (response.getResponseCode() != 200)
+    return -1 * response.getResponseCode();
+
+  var json = response.getContentText();
+  var data = JSON.parse(json);
+  var supply = {"USD" : data[0].available_supply };
+  var returnVal = supply["USD"];
+
+  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
+  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
+
+  return Number(returnVal)
+}
+
+// Returns token total supply from CoinMarketcap API
+// Reference: https://coinmarketcap.com/api/
+
+function getTotalSupply (name) {
+
+  var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
+  var cacheSalt = 'totalSupply'
+
+  var cachedValue = getFromCache(url + cacheSalt);
+  if(cachedValue!=null)
+    return Number(cachedValue);
+
+  var response = UrlFetchApp.fetch(url);
+
+  if (response.getResponseCode() != 200)
+    return -1 * response.getResponseCode();
+
+  var json = response.getContentText();
+  var data = JSON.parse(json);
+  var supply = {"USD" : data[0].total_supply };
+  var returnVal = supply["USD"];
+
+  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
+  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
+
+  return Number(returnVal)
 }
 
 // Returns current cryptocurrency price from CryptoCompare API for a particular fiat currency symbol
@@ -118,7 +166,7 @@ function getPriceCryptoCompareAtDate(cryptoSymbol, currencySymbol, date){
   var pair = data[cryptoSymbol.toUpperCase()];
   var price = pair[currencySymbol.toUpperCase()];
 
-  var cacheExpiryInSeconds = 60 * 60 * 24; // 1 day
+  var cacheExpiryInSeconds = 60 * 60 * 12; // 12 hours
   putToCache(url, price, cacheExpiryInSeconds);
 
   return Number(price);
@@ -177,7 +225,7 @@ function getCurrencyRateAgainstUSDAtDate(currencySymbol, date){
   var data = JSON.parse(json);
   var price = data.rates[currencySymbol];
 
-  var cacheExpiryInSeconds = 60 * 60 * 24;
+  var cacheExpiryInSeconds = 60 * 60 * 12; // 12 hours
   putToCache(url, price, cacheExpiryInSeconds);
 
   return Number(price);
