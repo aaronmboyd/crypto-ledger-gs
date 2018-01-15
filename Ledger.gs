@@ -30,6 +30,31 @@ function getUSDPriceCoinMarketCap (name) {
   return Number(price)
 }
 
+function getETHPriceCoinMarketCap (name) {
+
+  var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=ETH"
+  var cacheSalt = 'ETHprice'
+
+  var cachedValue = getFromCache(url + cacheSalt);
+  if(cachedValue!=null)
+    return Number(cachedValue);
+
+  var response = UrlFetchApp.fetch(url);
+  var json = response.getContentText();
+
+  if (response.getResponseCode() != 200)
+    return -1 * response.getResponseCode();
+
+  var data = JSON.parse(json);
+  var priceval = {"ETH" : data[0].price_eth };
+  var price = priceval["ETH"];
+
+  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
+  putToCache(url + cacheSalt, price, cacheExpiryInSeconds);
+
+  return Number(price)
+}
+
 // Returns current cryptocurrency market cap from CoinMarketcap API
 // Reference: https://coinmarketcap.com/api/
 
