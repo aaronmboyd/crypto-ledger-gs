@@ -10,7 +10,7 @@ function getUSDPriceCoinMarketCap (name) {
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
   var cacheSalt = 'price'
 
-  var cachedValue = getFromCache(url + cacheSalt);  
+  var cachedValue = getFromCache(url + cacheSalt);
   if(cachedValue!=null)
     return Number(cachedValue);
 
@@ -106,6 +106,34 @@ function getTotalSupply (name) {
   var json = response.getContentText();
   var data = JSON.parse(json);
   var supply = {"USD" : data[0].total_supply };
+  var returnVal = supply["USD"];
+
+  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
+  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
+
+  return Number(returnVal)
+}
+
+// Returns 24 hour price change CoinMarketcap API
+// Reference: https://coinmarketcap.com/api/
+
+function get24HourChange (name) {
+
+  var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
+  var cacheSalt = '24HourChange'
+
+  var cachedValue = getFromCache(url + cacheSalt);
+  if(cachedValue!=null)
+    return Number(cachedValue);
+
+  var response = UrlFetchApp.fetch(url);
+
+  if (response.getResponseCode() != 200)
+    return -1 * response.getResponseCode();
+
+  var json = response.getContentText();
+  var data = JSON.parse(json);
+  var supply = {"USD" : data[0].percent_change_24h };
   var returnVal = supply["USD"];
 
   var cacheExpiryInSeconds = 60 * 10; // 10 minutes
