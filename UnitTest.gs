@@ -13,6 +13,7 @@ function test_all(){
   test_currencyRateAgainstUSDAtDate();
   test_assetPriceFiat();
   test_assetPriceCrypto();
+  test_getUrlFetchCount();
 }
 
 function test_GetUSDPriceCoinMarketCap() {
@@ -94,4 +95,13 @@ function test_getCache_Hit()
 
   var cacheMiss = getFromCache("testkey123999999");
   Logger.log("Expecting miss - cache value = " + cacheMiss);
+}
+
+function test_getUrlFetchCount()
+{
+  Logger.log("urlFetchCount = " + getUrlFetchCount());
+}
+function test_getCacheFetchCount()
+{
+  Logger.log("cacheFetchCount = " + getCacheFetchCount());
 }
