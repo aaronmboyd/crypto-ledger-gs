@@ -8,51 +8,24 @@
 function getUSDPriceCoinMarketCap (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
-  var cacheSalt = 'price'
-
-  var cachedValue = getFromCache(url + cacheSalt);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-  var json = response.getContentText();
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
-  var priceval = {"USD" : data[0].price_usd };
-  var price = priceval["USD"];
+  var price = data[0].price_usd;
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url + cacheSalt, price, cacheExpiryInSeconds);
-
-  return Number(price)
+  return Number(price);
 }
+
+// Returns current cryptocurrency price CoinMarketcap API in ETH
+// Reference: https://coinmarketcap.com/api/
 
 function getETHPriceCoinMarketCap (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=ETH"
-  var cacheSalt = 'ETHprice'
-
-  var cachedValue = getFromCache(url + cacheSalt);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-  var json = response.getContentText();
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
-  var priceval = {"ETH" : data[0].price_eth };
-  var price = priceval["ETH"];
+  var price = data[0].price_eth;
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url + cacheSalt, price, cacheExpiryInSeconds);
-
-  return Number(price)
+  return Number(price);
 }
 
 // Returns current cryptocurrency market cap from CoinMarketcap API
@@ -61,26 +34,11 @@ function getETHPriceCoinMarketCap (name) {
 function getUSDMarketCap (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
-  var cacheSalt = 'marketcap'
-
-  var cachedValue = getFromCache(url + cacheSalt);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-  var json = response.getContentText();
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
-  var marketcap = {"USD" : data[0].market_cap_usd };
-  var returnVal = marketcap["USD"];
+  var marketcap = data[0].market_cap_usd;
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
-
-  return Number(returnVal)
+  return Number(marketcap);
 }
 
 // Returns token available supply from CoinMarketcap API
@@ -89,26 +47,11 @@ function getUSDMarketCap (name) {
 function getAvailableSupply (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
-  var cacheSalt = 'availableSupply'
-
-  var cachedValue = getFromCache(url + cacheSalt);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
-  var json = response.getContentText();
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
-  var supply = {"USD" : data[0].available_supply };
-  var returnVal = supply["USD"];
+  var supply = data[0].available_supply;
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
-
-  return Number(returnVal)
+  return Number(supply);
 }
 
 // Returns token total supply from CoinMarketcap API
@@ -117,26 +60,11 @@ function getAvailableSupply (name) {
 function getTotalSupply (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
-  var cacheSalt = 'totalSupply'
-
-  var cachedValue = getFromCache(url + cacheSalt);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
-  var json = response.getContentText();
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
-  var supply = {"USD" : data[0].total_supply };
-  var returnVal = supply["USD"];
+  var supply = data[0].total_supply;
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
-
-  return Number(returnVal)
+  return Number(supply);
 }
 
 // Returns 24 hour price change CoinMarketcap API
@@ -145,26 +73,11 @@ function getTotalSupply (name) {
 function get24HourChange (name) {
 
   var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=USD"
-  var cacheSalt = '24HourChange'
-
-  var cachedValue = getFromCache(url + cacheSalt);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
-  var json = response.getContentText();
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
-  var supply = {"USD" : data[0].percent_change_24h };
-  var returnVal = supply["USD"];
+  var dailyChange = data[0].percent_change_24h;
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url + cacheSalt, returnVal, cacheExpiryInSeconds);
-
-  return Number(returnVal)
+  return Number(dailyChange);
 }
 
 // Returns current cryptocurrency price from CryptoCompare API for a particular fiat currency symbol
@@ -172,24 +85,11 @@ function get24HourChange (name) {
 
 function getPriceCryptoCompare (name, currencySymbol) {
   var url = "https://min-api.cryptocompare.com/data/price?fsym=" + name.toUpperCase() + "&tsyms=" + currencySymbol.toUpperCase();
-
-  var cachedValue = getFromCache(url);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-  var json = response.getContentText();
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
   var price = data[currencySymbol.toUpperCase()];
 
-  var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-  putToCache(url, price, cacheExpiryInSeconds);
-
-  return Number(price)
+  return Number(price);
 }
 
 // Convert date to epoch seconds for use with CryptoCompare API
@@ -204,23 +104,10 @@ function getPriceCryptoCompareAtDate(cryptoSymbol, currencySymbol, date){
 
   var dateInEpochSeconds = toEpochSeconds(date);
   var url = "https://min-api.cryptocompare.com/data/pricehistorical?fsym="+cryptoSymbol.toUpperCase()+"&tsyms="+currencySymbol.toUpperCase()+"&ts="+dateInEpochSeconds;
-
-  var cachedValue = getFromCache(url);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-  var json = response.getContentText();
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
   var pair = data[cryptoSymbol.toUpperCase()];
   var price = pair[currencySymbol.toUpperCase()];
-
-  var cacheExpiryInSeconds = 60 * 60 * 12; // 12 hours
-  putToCache(url, price, cacheExpiryInSeconds);
 
   return Number(price);
 }
@@ -235,23 +122,9 @@ function getCurrencyRateAgainstUSD(currencySymbol){
   }
   else {
     var url = "http://api.fixer.io/latest?base=USD";
-
-    var cachedValue = getFromCache(url);
-    if(cachedValue!=null)
-      return Number(cachedValue);
-
-    var response = UrlFetchApp.fetch(url);
-    var json = response.getContentText();
-
-    if (response.getResponseCode() != 200)
-      return -1 * response.getResponseCode();
-
+    var json = getCachedUrlContent(url);
     var data = JSON.parse(json);
     var price = data.rates[currencySymbol];
-
-    var cacheExpiryInSeconds = 60 * 30; //30 minutes
-    putToCache(url, price, cacheExpiryInSeconds);
-
     return Number(price);
   }
 }
@@ -264,22 +137,9 @@ function getCurrencyRateAgainstUSDAtDate(currencySymbol, date){
   var dateString = Utilities.formatDate(date, "GMT+10", "yyyy-MM-dd");
   Logger.log("dateString="+ dateString);
   var url = "http://api.fixer.io/"+dateString+"?base=USD";
-
-  var cachedValue = getFromCache(url);
-  if(cachedValue!=null)
-    return Number(cachedValue);
-
-  var response = UrlFetchApp.fetch(url);
-
-  if (response.getResponseCode() != 200)
-    return -1 * response.getResponseCode();
-
-  var json = response.getContentText();
+  var json = getCachedUrlContent(url);
   var data = JSON.parse(json);
   var price = data.rates[currencySymbol];
-
-  var cacheExpiryInSeconds = 60 * 60 * 12; // 12 hours
-  putToCache(url, price, cacheExpiryInSeconds);
 
   return Number(price);
 }
