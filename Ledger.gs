@@ -285,7 +285,7 @@ function getCurrencyRateAgainstUSD(currencySymbol){
 function getCurrencyRateAgainstUSDAtDate(currencySymbol, date){
 
   var dateString = Utilities.formatDate(date, "GMT+10", "yyyy-MM-dd");
-  var url = "http://api.fixer.io/"+dateString+"?access_key=" + getFixerIOAPIKey();
+  var url = "http://data.fixer.io/"+dateString+"?access_key=" + getFixerIOAPIKey();
 
   try{
     var cacheExpiryInSeconds = 60 * 60 * 24; // 1 day
