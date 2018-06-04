@@ -241,12 +241,19 @@ function getPriceCryptoCompareAtDate(cryptoSymbol, currencySymbol, date){
 
 }
 
+function getFixerIOAPIKey(){
+  var spreadSheet = SpreadsheetApp.getActiveSpreadsheet ();
+  var dataSheet = spreadSheet.getSheetByName("Data");
+  var apiKey = dataSheet.getRange("D2").getValue();
+  return apiKey;
+}
+
 // Return currency rate vs USD for given fiat symbol
 // Reference: http://fixer.io/
 
 function getCurrencyRateAgainstUSD(currencySymbol){
 
-  var url = "http://api.fixer.io/latest?base=USD";
+  var url = "http://data.fixer.io/latest?access_key=" + getFixerIOAPIKey();
   try{
     if(currencySymbol == "USD") {
       return 1.0;
@@ -256,7 +263,9 @@ function getCurrencyRateAgainstUSD(currencySymbol){
       var cacheExpiryInSeconds = 60 * 60 * 24; // 1 day
       var json = getCachedUrlContent(url, cacheExpiryInSeconds);
       var data = JSON.parse(json);
-      var price = data.rates[currencySymbol];
+
+      var usd = data.rates["USD"];
+      var price = usd / data.rates[currencySymbol];
 
       log(url, Number(price));
       return Number(price);
@@ -276,13 +285,15 @@ function getCurrencyRateAgainstUSD(currencySymbol){
 function getCurrencyRateAgainstUSDAtDate(currencySymbol, date){
 
   var dateString = Utilities.formatDate(date, "GMT+10", "yyyy-MM-dd");
-  var url = "http://api.fixer.io/"+dateString+"?base=USD";
+  var url = "http://api.fixer.io/"+dateString+"?access_key=" + getFixerIOAPIKey();
 
   try{
     var cacheExpiryInSeconds = 60 * 60 * 24; // 1 day
     var json = getCachedUrlContent(url, cacheExpiryInSeconds);
     var data = JSON.parse(json);
-    var price = data.rates[currencySymbol];
+
+    var usd = data.rates["USD"];
+    var price = usd / data.rates[currencySymbol];
 
     log(url, Number(price));
     return Number(price);

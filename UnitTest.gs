@@ -31,7 +31,7 @@ function test_GetPriceCryptoCompareAtDate() {
   Logger.log("getPriceCryptoCompareAtDate = $" + price);
 }
 
-function test_currencyRateAgainstUSD() {
+function test_currencyRateAgainstUSD_THB() {
   var currencySymbol = "THB";
   var price = getCurrencyRateAgainstUSD(currencySymbol);
   Logger.log("getCurrencyRateAgainstUSD $1 USD = " + currencySymbol + " " + price);
