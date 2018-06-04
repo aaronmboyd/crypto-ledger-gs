@@ -264,8 +264,8 @@ function getCurrencyRateAgainstUSD(currencySymbol){
       var json = getCachedUrlContent(url, cacheExpiryInSeconds);
       var data = JSON.parse(json);
 
-      var usd = data.rates["USD"];
-      var price = usd / data.rates[currencySymbol];
+      var usd = 1/ data.rates["USD"];
+      var price = usd / (1 / data.rates[currencySymbol]);
 
       log(url, Number(price));
       return Number(price);
@@ -292,8 +292,8 @@ function getCurrencyRateAgainstUSDAtDate(currencySymbol, date){
     var json = getCachedUrlContent(url, cacheExpiryInSeconds);
     var data = JSON.parse(json);
 
-    var usd = data.rates["USD"];
-    var price = usd / data.rates[currencySymbol];
+    var usd = 1/ data.rates["USD"];
+    var price = usd / (1 / data.rates[currencySymbol]);
 
     log(url, Number(price));
     return Number(price);
