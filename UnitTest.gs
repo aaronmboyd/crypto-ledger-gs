@@ -1,14 +1,14 @@
 function test_newEntry(){
- newEntry();
+ newEntry(); 
 }
 
 function test_all(){
-
+  
   // Run all, check logs afterwards (Ctrl+Enter)
-
+  
   test_GetUSDPriceCoinMarketCap();
-  test_GetPriceCryptoCompare();
-  test_GetPriceCryptoCompareAtDate();
+  test_GetPriceCryptoCompare();  
+  test_GetPriceCryptoCompareAtDate();  
   test_currencyRateAgainstUSD();
   test_currencyRateAgainstUSDAtDate();
   test_assetPriceFiat();
@@ -16,38 +16,38 @@ function test_all(){
   test_getUrlFetchCount();
 }
 
-function test_GetUSDPriceCoinMarketCap() {
+function test_GetUSDPriceCoinMarketCap() {  
   var price = getUSDPriceCoinMarketCap("bitcoin");
   Logger.log("getUSDPriceCoinMarketCap = $" + price);
 }
 
-function test_GetPriceCryptoCompare() {
+function test_GetPriceCryptoCompare() {  
   var price = getPriceCryptoCompare("btc","aud");
-  Logger.log("getPriceCryptoCompare = $" + price);
+  Logger.log("getPriceCryptoCompare = $" + price);  
 }
 
-function test_GetPriceCryptoCompareAtDate() {
+function test_GetPriceCryptoCompareAtDate() {  
   var price = getPriceCryptoCompareAtDate("dash","aud", new Date("2017/07/08"));
-  Logger.log("getPriceCryptoCompareAtDate = $" + price);
+  Logger.log("getPriceCryptoCompareAtDate = $" + price);  
 }
 
-function test_currencyRateAgainstUSD_THB() {
+function test_currencyRateAgainstUSD() {  
   var currencySymbol = "THB";
   var price = getCurrencyRateAgainstUSD(currencySymbol);
-  Logger.log("getCurrencyRateAgainstUSD $1 USD = " + currencySymbol + " " + price);
+  Logger.log("getCurrencyRateAgainstUSD $1 USD = " + currencySymbol + " " + price);  
 }
 
-function test_currencyRateAgainstUSD() {
+function test_currencyRateAgainstUSD() {  
   var currencySymbol = "USD";
   var price = getCurrencyRateAgainstUSD(currencySymbol);
-  Logger.log("getCurrencyRateAgainstUSD $1 USD = " + currencySymbol + " " + price);
+  Logger.log("getCurrencyRateAgainstUSD $1 USD = " + currencySymbol + " " + price);  
 }
 
-function test_currencyRateAgainstUSDAtDate() {
+function test_currencyRateAgainstUSDAtDate() {  
   var currencySymbol = "THB";
   var testDate = new Date("2009/10/21");
   var price = getCurrencyRateAgainstUSDAtDate(currencySymbol, testDate);
-  Logger.log("At date = " + testDate + ", getCurrencyRateAgainstUSDAtDate $1 USD = " + currencySymbol + " " + price);
+  Logger.log("At date = " + testDate + ", getCurrencyRateAgainstUSDAtDate $1 USD = " + currencySymbol + " " + price);  
 }
 
 function test_assetPriceFiat(){
@@ -57,7 +57,7 @@ function test_assetPriceFiat(){
   var price = assetPrice(selectedCurrency,asset,date);
   Logger.log("assetPrice =" + price);
 }
-
+  
 function test_assetPriceCrypto(){
   var selectedCurrency = "AUD";
   var asset = "ETH";
@@ -92,9 +92,9 @@ function test_getCache_Hit()
   test_putCache();
   var cacheHit = getFromCache("testkey123");
   Logger.log("Expecting hit - cache value = " + cacheHit);
-
+             
   var cacheMiss = getFromCache("testkey123999999");
-  Logger.log("Expecting miss - cache value = " + cacheMiss);
+  Logger.log("Expecting miss - cache value = " + cacheMiss);             
 }
 
 function test_getUrlFetchCount()
@@ -105,3 +105,31 @@ function test_getCacheFetchCount()
 {
   Logger.log("cacheFetchCount = " + getCacheFetchCount());
 }
+
+function test_getCachedUrlContent()
+{
+  putToCache("https://api.coinmarketcap.com/v1/ticker/ethereum?convert=USD","CACHED DATA", 60 * 10);
+  var content = getCachedUrlContent("https://api.coinmarketcap.com/v1/ticker/ethereum?convert=USD", 60 * 10);
+  Logger.log("getCachedUrlContent = " + content);
+}
+
+function test_getCoinmarketCapIDForSymbol(){
+  
+  var symbols = ["BTC","ETH","XLM","XMR","FKX"];
+  for(var i = 0; i < symbols.length; i++) {
+    var id = getCoinmarketCapIDForSymbol(symbols[i]);
+    Logger.log("Symbol = " + symbols[i] + ", id = " + id);
+  }  
+}
+
+function test_getUSDPriceCoinMarketCapV2(){
+  
+  var symbols = ["BTC","ETH","XLM","XMR","FKX"];
+  for(var i = 0; i < symbols.length; i++) {
+    var price = getUSDPriceCoinMarketCapV2(symbols[i]);
+    Logger.log("Symbol = " + symbols[i] + ", price = " + price);
+  }  
+}
+
+
+
