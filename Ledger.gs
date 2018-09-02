@@ -1,7 +1,7 @@
 // *********************************************************************************************************************
 // Financial functions
 // *********************************************************************************************************************
-
+//
 // Returns current cryptocurrency price from CoinMarketcap API
 // Reference: https://coinmarketcap.com/api/
 
@@ -18,6 +18,94 @@ function getUSDPriceCoinMarketCap (name) {
     var json = getCachedUrlContent(url, cacheExpiryInSeconds);
     var data = JSON.parse(json);
     var price = data[0].price_usd;
+
+    log(url, Number(price));
+    return Number(price);
+  }
+  catch(ex){
+    var msg = "Exception: " + ex;
+    log(url,msg);
+    return msg;
+  }
+}
+
+// Returns current cryptocurrency price from CoinMarketcap API V2
+// Reference: https://coinmarketcap.com/api/
+
+function getUSDPriceCoinMarketCapV2 (symbol) {
+
+  var id = getCoinmarketCapIDForSymbol(symbol);
+  var url = "https://api.coinmarketcap.com/v2/ticker/" + id;
+  try{
+
+    var cacheExpiryInSeconds = 60 * 60; // 1 hour
+    var json = getCachedUrlContent(url, cacheExpiryInSeconds);
+    var data = JSON.parse(json);
+    var price = data.data.quotes.USD.price;
+    log(url, Number(price));
+    return Number(price);
+  }
+  catch(ex){
+    var msg = "Exception: " + ex;
+    log(url,msg);
+    return msg;
+  }
+}
+
+// Returns CoinMarketCap API V2 ID for a symbol
+// Reference: https://coinmarketcap.com/api/
+
+function getCoinmarketCapIDForSymbol (cryptoSymbol) {
+  
+  var cachedResult = getFromCache("getCoinmarketCapIDForSymbol"+cryptoSymbol);
+  
+  if(cachedResult!=null){
+    return cachedResult;
+  }
+  else{     
+  
+    var url = "https://api.coinmarketcap.com/v2/listings";
+    try{
+      
+      var json = UrlFetchApp.fetch(url); 
+      var data = JSON.parse(json);
+      
+      var id = -1;
+      var arr = data.data;
+      for(var i = 0; i < arr.length; ++i) {
+        var obj = arr[i];
+        if(obj.symbol == cryptoSymbol) {
+          id = obj.id;
+        }
+      }
+      var cacheExpiryInSeconds = 60 * 60; // 1 hour
+      putToCache("getCoinmarketCapIDForSymbol"+cryptoSymbol, id, cacheExpiryInSeconds);
+      return id;
+    }
+    catch(ex){
+      var msg = "Exception: " + ex;
+      log(url,msg);
+      return msg;
+    }
+  }
+}
+
+// Returns current cryptocurrency price CoinMarketcap API in ETH
+// Reference: https://coinmarketcap.com/api/
+
+function getETHPriceCoinMarketCap (name) {
+
+  var url = "https://api.coinmarketcap.com/v1/ticker/" + name + "?convert=ETH";
+
+  try{
+    if(name.indexOf("_refresh")>-1){
+      return 0;
+    }
+
+    var cacheExpiryInSeconds = 60 * 60; // 1 hour
+    var json = getCachedUrlContent(url, cacheExpiryInSeconds);
+    var data = JSON.parse(json);
+    var price = data[0].price_eth;
 
     log(url, Number(price));
     return Number(price);
@@ -56,6 +144,7 @@ function getETHPriceCoinMarketCap (name) {
   }
 
 }
+
 
 // Returns current cryptocurrency market cap from CoinMarketcap API
 // Reference: https://coinmarketcap.com/api/
