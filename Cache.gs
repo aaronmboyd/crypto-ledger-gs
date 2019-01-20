@@ -1,14 +1,20 @@
 // *********************************************************************************************************************
 // Cache functions
+// Use MD5 hash of the URL because cache key size is limited
 // *********************************************************************************************************************
+
+var MAXIMUM_CACHE_EXPIRY = 21600;
 
 function getCache(){
   return CacheService.getDocumentCache();
 }
 
 function putToCache(key, value, expirationInSeconds) {
-  var cache = getCache();
-  cache.put(key, value, expirationInSeconds);
+  
+  if(expirationInSeconds > MAXIMUM_CACHE_EXPIRY) {
+    expirationInSeconds = MAXIMUM_CACHE_EXPIRY;
+  }  
+  getCache().put(key, value, expirationInSeconds);
 }
 
 function getFromCache(key){
@@ -16,18 +22,36 @@ function getFromCache(key){
   return cache.get(key);
 }
 
-function getCachedUrlContent(url){
+function getCachedUrlContent(url, cacheExpiryInSeconds){
 
-  var cachedContent = getFromCache(url);
+  // Concatenate url with expiry time so that short cache requests are not bundled in with long ones
+  var cacheKey = MD5(url + "-" + cacheExpiryInSeconds);
+  
+  //Logger.log("URL is : " + url);
+  Logger.log("MD5 for cache is : " + cacheKey);
+  
+  var cachedContent = getFromCache(cacheKey);
 
   if(cachedContent==null){
     var response = UrlFetchApp.fetch(url);
-    var json = response.getContentText();
-
-    var cacheExpiryInSeconds = 60 * 10; // 10 minutes
-    putToCache(url, json, cacheExpiryInSeconds);
-    cachedContent = json;
-    incrementUrlFetch();
+    
+    // Too many requests, try again in 3 seconds
+    if(response.getResponseCode() == 429){
+      Utilities.sleep(3000);
+      getCachedUrlContent(url, cacheExpiryinSeconds);
+    }
+    // OK
+    else if (response.getResponseCode() == 200) {    
+      var json = response.getContentText();      
+      putToCache(cacheKey, json, cacheExpiryInSeconds);
+      cachedContent = json;
+      incrementUrlFetch();
+    }
+    // All other errors return error but don't cache result
+    else {
+      var json = response.getContentText();      
+      cachedContent = json;
+    }    
   }
   else {
     incrementCacheFetch();

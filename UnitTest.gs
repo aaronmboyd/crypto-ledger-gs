@@ -14,6 +14,7 @@ function test_all(){
   test_assetPriceFiat();
   test_assetPriceCrypto();
   test_getUrlFetchCount();
+  test_getPriceCoinMarketCapPro();  
 }
 
 function test_GetUSDPriceCoinMarketCap() {  
@@ -122,14 +123,28 @@ function test_getCoinmarketCapIDForSymbol(){
   }  
 }
 
-function test_getUSDPriceCoinMarketCapV2(){
+function test_getQuoteCoinMarketCapPro_price(){
   
   var symbols = ["BTC","ETH","XLM","XMR","FKX"];
   for(var i = 0; i < symbols.length; i++) {
-    var price = getUSDPriceCoinMarketCapV2(symbols[i]);
+    var price = getQuoteCoinMarketCapPro(symbols[i], "USD", "price");
     Logger.log("Symbol = " + symbols[i] + ", price = " + price);
   }  
 }
+
+function test_getQuoteCoinMarketCapPro_percent_change_24h(){
+  
+  var symbols = ["BTC","ETH","XLM","XMR","FKX"];
+  for(var i = 0; i < symbols.length; i++) {
+    var price = getQuoteCoinMarketCapPro(symbols[i], "USD", "percent_change_24h");
+    Logger.log("Symbol = " + symbols[i] + ", % change 24 hour = " + price);
+  }  
+}
+
+function test_getAllSymbols(){
+  Logger.log("Get all symbols: " + getAllSymbols()); 
+}
+
 
 
 
